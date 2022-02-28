@@ -19,12 +19,6 @@ describe Oystercard do
     expect { subject.top_up_card(1) }.to raise_error error_message
   end
 
-  it 'deducts a £5 from the balance' do
-    subject.top_up_card(10)
-    subject.deduct(5)
-    expect(subject.balance).to eq 5
-  end
-
   it 'oystercard to respond to in journey' do
     expect(subject).to respond_to(:in_journey?)
   end
@@ -52,5 +46,11 @@ describe Oystercard do
       subject.touch_out
       expect(subject).to_not be_in_journey
     end
+
+    it 'oystercard touching out reduces the balance of the oystercard by £1' do
+      subject.touch_in
+      expect { subject.touch_out }.to change { subject.balance }.by(-1)
+    end
   end 
+ 
 end
