@@ -47,9 +47,9 @@ describe Oystercard do
       expect(subject).to_not be_in_journey
     end
 
-    it 'oystercard touching out reduces the balance of the oystercard by £1' do
+    it 'oystercard touching out reduces the balance of the oystercard by minimum journey fee' do
       subject.touch_in
-      expect { subject.touch_out }.to change { subject.balance }.by(-1)
+      expect { subject.touch_out }.to change { subject.balance }.by(-Oystercard::MIN_JOURNEY_FEE)
     end
   end 
  
