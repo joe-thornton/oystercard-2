@@ -22,5 +22,24 @@ describe Oystercard do
     subject.deduct(5)
     expect(subject.balance).to eq 5
   end
+
+  it 'oystercard to respond to in journey' do
+    expect(subject).to respond_to(:in_journey?)
+  end
+
+  it 'when new oystercard instance is initialised it will not be in_journey' do
+    expect(subject).to_not be_in_journey
+  end
+
+  it 'oystercard touch_in changes in_journey? to true' do
+    subject.touch_in
+    expect(subject).to be_in_journey
+  end
+
+  it 'oystercard touch_out after touching in returns in_journey? to false' do
+    subject.touch_in
+    subject.touch_out
+    expect(subject).to_not be_in_journey
+  end
   
 end
