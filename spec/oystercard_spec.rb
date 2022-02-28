@@ -1,6 +1,8 @@
 require 'oystercard'
 
 describe Oystercard do
+  
+
   it 'New card instance has a balance of 0' do
     expect(subject.balance).to eq 0
   end
@@ -31,15 +33,24 @@ describe Oystercard do
     expect(subject).to_not be_in_journey
   end
 
-  it 'oystercard touch_in changes in_journey? to true' do
-    subject.touch_in
-    expect(subject).to be_in_journey
-  end
-
-  it 'oystercard touch_out after touching in returns in_journey? to false' do
-    subject.touch_in
-    subject.touch_out
-    expect(subject).to_not be_in_journey
+  it 'refuses entry if balance is below min journey balance' do
+    expect { subject.touch_in }.to raise_error "Insufficient balance for journey"    
   end
   
+  context 'oystercard balance has sufficient journey funds' do
+    before(:each) do
+      subject.balance = 5
+    end
+
+    it 'oystercard touch_in changes in_journey? to true' do
+      subject.touch_in
+      expect(subject).to be_in_journey
+    end
+
+    it 'oystercard touch_out after touching in returns in_journey? to false' do
+      subject.touch_in
+      subject.touch_out
+      expect(subject).to_not be_in_journey
+    end
+  end 
 end
