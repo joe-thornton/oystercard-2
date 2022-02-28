@@ -16,5 +16,11 @@ describe Oystercard do
     error_message = "Top-up unsuccessful - balance cannot exceed £#{max_balance}"
     expect { subject.top_up_card(1) }.to raise_error error_message
   end
+
+  it 'deducts a £5 from the balance' do
+    subject.top_up_card(10)
+    subject.deduct(5)
+    expect(subject.balance).to eq 5
+  end
   
 end
