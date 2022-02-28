@@ -2,6 +2,8 @@ require 'oystercard'
 
 describe Oystercard do
   let(:station) { double :station }
+  let(:exit_station) { double :exit_station }
+  let(:journey) { {entry_station: station, exit_station: exit_station} }
 
   it 'New card instance has a balance of 0' do
     expect(subject.balance).to eq 0
@@ -31,6 +33,10 @@ describe Oystercard do
     expect { subject.touch_in(station) }.to raise_error "Insufficient balance for journey"    
   end
   
+  it 'creates an empty journey list upon initializing new oystercard' do
+    expect(subject.journey_list).to be_empty
+  end
+
   context 'oystercard balance has sufficient journey funds' do
     before(:each) do
       subject.balance = 5
@@ -43,13 +49,13 @@ describe Oystercard do
 
     it 'oystercard touch_out after touching in returns in_journey? to false' do
       subject.touch_in(station)
-      subject.touch_out
+      subject.touch_out(exit_station)
       expect(subject).to_not be_in_journey
     end
 
     it 'oystercard touching out reduces the balance of the oystercard by minimum journey fee' do
       subject.touch_in(station)
-      expect { subject.touch_out }.to change { subject.balance }.by(-Oystercard::MIN_JOURNEY_FEE)
+      expect { subject.touch_out(exit_station) }.to change { subject.balance }.by(-Oystercard::MIN_JOURNEY_FEE)
     end
 
     it 'oystercard to store the entry station' do
@@ -59,12 +65,21 @@ describe Oystercard do
 
     it 'entry station is deleted upon touching out' do
       subject.touch_in(station)
-      subject.touch_out
+      subject.touch_out(exit_station)
       expect(subject.entry_station).to eq(nil)
+    end
+
+    # it 'stores entry_station to an array as a hash' do
+    #   subject.touch_in(station)
+    #   expect(subject.journey_list).to eq [{entry_station: station}]
+    # end
+
+    it 'when we touch out, we add exit station to the journey list of the current journey' do
+      subject.touch_in(station)
+      subject.touch_out(exit_station)
+      expect(subject.journey_list).to eq [journey]
     end
 
   end 
 
-  
- 
 end
