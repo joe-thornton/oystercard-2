@@ -58,21 +58,10 @@ describe Oystercard do
       expect { subject.touch_out(exit_station) }.to change { subject.balance }.by(-Oystercard::MIN_JOURNEY_FEE)
     end
 
-    it 'oystercard to store the entry station' do
+    it 'stores entry_station to an array as a hash' do
       subject.touch_in(station)
-      expect(subject.entry_station).to eq(station)
+      expect(subject.journey_list).to eq [{entry_station: station}]
     end
-
-    it 'entry station is deleted upon touching out' do
-      subject.touch_in(station)
-      subject.touch_out(exit_station)
-      expect(subject.entry_station).to eq(nil)
-    end
-
-    # it 'stores entry_station to an array as a hash' do
-    #   subject.touch_in(station)
-    #   expect(subject.journey_list).to eq [{entry_station: station}]
-    # end
 
     it 'when we touch out, we add exit station to the journey list of the current journey' do
       subject.touch_in(station)
