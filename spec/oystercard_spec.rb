@@ -21,14 +21,6 @@ describe Oystercard do
     expect { subject.top_up_card(1) }.to raise_error error_message
   end
 
-  it 'oystercard to respond to in journey' do
-    expect(subject).to respond_to(:in_journey?)
-  end
-
-  it 'when new oystercard instance is initialised it will not be in_journey' do
-    expect(subject).to_not be_in_journey
-  end
-
   it 'refuses entry if balance is below min journey balance' do
     expect { subject.touch_in(station) }.to raise_error "Insufficient balance for journey"    
   end
@@ -42,28 +34,26 @@ describe Oystercard do
       subject.balance = 5
     end
 
-    it 'oystercard touch_in changes in_journey? to true' do
+ 
+    it 'oystercard touching out reduces the balance of the oystercard by journey fare' do
+      new_journey = double(:new_journey)
+      allow(new_journey).to receive(:calculate_fare).and_return(1)
       subject.touch_in(station)
-      expect(subject).to be_in_journey
+      expect { subject.touch_out(exit_station) }.to change { subject.balance }.by(-1)
     end
 
-    it 'oystercard touch_out after touching in returns in_journey? to false' do
-      subject.touch_in(station)
-      subject.touch_out(exit_station)
-      expect(subject).to_not be_in_journey
-    end
+    # How can we test this?????!!!!!!!!!!!!!!!
 
-    it 'oystercard touching out reduces the balance of the oystercard by minimum journey fee' do
-      subject.touch_in(station)
-      expect { subject.touch_out(exit_station) }.to change { subject.balance }.by(-Oystercard::MIN_JOURNEY_FEE)
-    end
+    # it 'stores entry_station to an array as a hash' do
+    #   new_journey = double(:new_journey)
+    #   allow(subject).to receive(:touch_in).and_return(subject.journey_list << new_journey)
+    #   subject.touch_in(station)
+    #   p subject.touch_in(station)
+    #   expect(subject.journey_list).to eq [new_journey]
+    #   p subject.journey_list
+    # end
 
-    it 'stores entry_station to an array as a hash' do
-      subject.touch_in(station)
-      expect(subject.journey_list).to eq [{entry_station: station}]
-    end
-
-    it 'when we touch out, we add exit station to the journey list of the current journey' do
+    it 'when we touch out, we add exit station to the current journey' do
       subject.touch_in(station)
       subject.touch_out(exit_station)
       expect(subject.journey_list).to eq [journey]
